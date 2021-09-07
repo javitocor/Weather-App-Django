@@ -69,6 +69,9 @@
                                 <a href="{% url  'delete_city' city_weather.city %}"><button class="delete"></button></a>
                             </div>
                         </article>
+                        <div class="">
+                            <a href="{% url  'forecast' city_weather.city %}?lon={{city_weather.coord.lon}}&lat={{city_weather.coord.lat}}"><button class="">Forecast</button></a>
+                        </div>
                     </div>
                     {% endfor %}
                 </div>

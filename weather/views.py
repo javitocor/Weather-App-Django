@@ -7,6 +7,7 @@ import environ
 from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -64,6 +65,7 @@ def index (request):
       'temperature': r['main']['temp'],
       'description': r['weather'][0]['description'],
       'icon': r['weather'][0]['icon'],
+      'coord': r['coord'],
     }
 
     weather_data.append(city_weather)
@@ -81,3 +83,23 @@ def delete_city(request, city_name):
   City.objects.get(name=city_name).delete()
 
   return redirect('home')
+
+def detail_city(request, city_name):  
+  lon = request.GET.get('lon')
+  lat = request.GET.get('lat')
+
+  url = 'https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude=minutely,alerts,hourly&units=metric&appid={}'
+
+  weather_forecast = []
+  
+  r = requests.get(url.format(lat, lon, API_KEY)).json()
+
+  for daily in r['daily']:
+    weather_forecast.append(daily)
+
+  context = {
+    'weather_forecast': weather_forecast,
+    'city_name': city_name,
+  }
+
+  return render(request, 'weather/detail.html', context)
