@@ -30,6 +30,10 @@ Things you may want to c<!--
 
 Additional description about the project and its features.
 
+
+![screenshot](./assets/screenshot.png)
+
+
 ## Built With
 
 - HTML 
