@@ -22,7 +22,7 @@ def get_env_variable(var_name):
 API_KEY = get_env_variable('API_KEY')
 
 def index (request):
-  print(API_KEY)
+  
   url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}'
   
   error_msg = ''
