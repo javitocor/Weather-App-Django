@@ -2,10 +2,28 @@ from django.shortcuts import render, redirect
 import requests
 from .models import City
 from .forms import CityForm
-# Create your views here.
+import os
+import environ
+from pathlib import Path
+from django.core.exceptions import ImproperlyConfigured
+
+env = environ.Env()
+environ.Env.read_env()
+
+
+def get_env_variable(var_name):
+    try:
+        return os.environ[var_name]
+    except KeyError:
+        error_msg = "set the %s environment variable" % var_name
+        raise ImproperlyConfigured(error_msg)
+
+
+API_KEY = get_env_variable('API_KEY')
 
 def index (request):
-  url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=903507f17d707fecd352d38301efba77'
+  print(API_KEY)
+  url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid={}'
   
   error_msg = ''
   message = ''
@@ -18,7 +36,7 @@ def index (request):
       new_city = form.cleaned_data['name']
       existing_city_count = City.objects.filter(name=new_city).count()
       if existing_city_count == 0:
-        r = requests.get(url.format(new_city)).json()
+        r = requests.get(url.format(new_city, API_KEY)).json()
         if r['cod'] == 200:
           form.save()
         else:
@@ -39,7 +57,7 @@ def index (request):
   weather_data = []
 
   for city in cities:
-    r = requests.get(url.format(city)).json()
+    r = requests.get(url.format(city, API_KEY)).json()
 
     city_weather = {
       'city': city.name,
@@ -61,5 +79,5 @@ def index (request):
 
 def delete_city(request, city_name):
   City.objects.get(name=city_name).delete()
-  
+
   return redirect('home')
